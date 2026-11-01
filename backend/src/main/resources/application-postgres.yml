@@ -1,0 +1,10 @@
+# PostgreSQL from the environment. Combine with dev (local demo) or prod (real deployment):
+#   SPRING_PROFILES_ACTIVE=dev,postgres   or   SPRING_PROFILES_ACTIVE=prod,postgres
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 5000

@@ -1,0 +1,7 @@
+# Production hardening. Use together with the postgres profile: SPRING_PROFILES_ACTIVE=prod,postgres
+# The dev token endpoint cannot exist under this profile, and API documentation is switched off.
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

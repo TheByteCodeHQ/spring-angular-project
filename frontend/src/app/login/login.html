@@ -1,0 +1,24 @@
+<main class="login card">
+  <h1>Sign in</h1>
+  <p class="muted">Development sign-in. A real deployment signs in through your identity provider.</p>
+
+  <form (submit)="submit($event)">
+    <label>
+      Name
+      <input type="text" name="username" autocomplete="username" maxlength="60" required
+             [value]="username()" (input)="onUsername($event)" />
+    </label>
+    <label>
+      Role
+      <select name="role" [value]="role()" (change)="onRole($event)">
+        <option value="USER">User (can create and edit)</option>
+        <option value="ADMIN">Admin (can also delete)</option>
+      </select>
+    </label>
+    <button type="submit" [disabled]="busy() || !username().trim()">Sign in</button>
+  </form>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+</main>

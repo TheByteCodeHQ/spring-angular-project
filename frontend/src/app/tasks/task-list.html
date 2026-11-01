@@ -1,0 +1,91 @@
+<section class="card">
+  <h2>New task</h2>
+  <form class="row" (submit)="add($event)">
+    <label class="grow">
+      Title
+      <input type="text" name="title" maxlength="120" placeholder="What needs doing?"
+             [value]="newTitle()" (input)="onNewTitle($event)" />
+    </label>
+    <label>
+      Due date
+      <input type="date" name="due" [value]="newDue()" (input)="onNewDue($event)" />
+    </label>
+    <button type="submit" [disabled]="!newTitle().trim()">Add task</button>
+  </form>
+</section>
+
+<section class="card">
+  <form class="row" (submit)="onFilter($event)">
+    <label class="grow">
+      Search titles
+      <input type="search" name="q" placeholder="Search" [value]="search()" (input)="onSearch($event)" />
+    </label>
+    <label>
+      Status
+      <select name="status" [value]="statusFilter()" (change)="onStatusFilter($event)">
+        <option value="">All</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ label(status) }}</option>
+        }
+      </select>
+    </label>
+    <button type="submit" class="ghost">Search</button>
+  </form>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+
+  <table>
+    <caption class="sr-only">Tasks</caption>
+    <thead>
+      <tr><th scope="col">Task</th><th scope="col">Status</th><th scope="col">Due</th><th scope="col">Created by</th><th scope="col"></th></tr>
+    </thead>
+    <tbody>
+      @for (task of items(); track task.id) {
+        <tr>
+          <td>
+            <strong>{{ task.title }}</strong>
+            @if (task.description) {
+              <div class="muted small">{{ task.description }}</div>
+            }
+          </td>
+          <td>
+            <select class="chip s-{{ task.status }}" [attr.aria-label]="'Status of ' + task.title"
+                    [value]="task.status" (change)="changeStatus(task, $event)">
+              @for (status of statuses; track status) {
+                <option [value]="status" [selected]="status === task.status">{{ label(status) }}</option>
+              }
+            </select>
+          </td>
+          <td [class.overdue]="isOverdue(task)">
+            {{ task.dueDate ? (task.dueDate | date: 'mediumDate') : '' }}
+            @if (isOverdue(task)) {
+              <span class="small">overdue</span>
+            }
+          </td>
+          <td class="muted">{{ task.createdBy }}</td>
+          <td class="actions">
+            @if (auth.isAdmin()) {
+              @if (confirmingDelete() === task.id) {
+                <button type="button" class="danger" (click)="confirmDelete(task)">Confirm delete</button>
+                <button type="button" class="ghost" (click)="cancelDelete()">Cancel</button>
+              } @else {
+                <button type="button" class="ghost" [attr.aria-label]="'Delete ' + task.title" (click)="askDelete(task)">Delete</button>
+              }
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="5" class="muted empty">{{ loading() ? 'Loading...' : 'No tasks match.' }}</td></tr>
+      }
+    </tbody>
+  </table>
+
+  <nav class="pager" aria-label="Pages">
+    <button type="button" class="ghost" [disabled]="page() === 0" (click)="load(page() - 1)">Previous</button>
+    <span class="muted">Page {{ totalPages() === 0 ? 0 : page() + 1 }} of {{ totalPages() }}
+      ({{ result()?.totalElements ?? 0 }} tasks)</span>
+    <button type="button" class="ghost" [disabled]="page() + 1 >= totalPages()" (click)="load(page() + 1)">Next</button>
+  </nav>
+</section>

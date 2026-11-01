@@ -1,0 +1,12 @@
+<header>
+  <h1>Task Manager</h1>
+  @if (auth.isAuthenticated()) {
+    <span class="who muted">
+      {{ auth.username() }}@if (auth.isAdmin()) { <span class="badge">admin</span> }
+    </span>
+    <button type="button" class="ghost" (click)="signOut()">Sign out</button>
+  }
+</header>
+<main>
+  <router-outlet />
+</main>
